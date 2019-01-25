@@ -48,6 +48,7 @@
     },
     "dependencies": {
         "@babel/polyfill": "^7.0.0",
-        "neo4j-driver": "^1.7.2"
+        "neo4j-driver": "^1.7.2",
+        "nets": "^3.2.0"
     }
 }
