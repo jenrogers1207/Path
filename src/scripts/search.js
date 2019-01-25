@@ -50,9 +50,9 @@ export async function searchById(value) {
                             neoAPI.setNodeProperty(value, prop, properties[prop]);
                         }
                     };
-
-
                 });
+
+                convert_id('ncbi-geneid:' + properties.ncbi);
             });
     }
 }
@@ -79,7 +79,7 @@ async function convert_id(id) {
                 console.error(err);
                 return;
             }
-            d3.select('#thinking').classed('hidden', true);
+
             // v this consoles what I want v 
             grabId(resp.rawRequest.responseText).then(ids => {
                 console.log(ids);
@@ -87,7 +87,7 @@ async function convert_id(id) {
                 let div = geneID.append('div').classed('ids', true);
                 div.append('text').text(ids[0]);
 
-                //linkData(ids);
+                linkData(ids);
             });
 
             // let json = JSON.parse(resp.rawRequest.responseText);
@@ -236,9 +236,9 @@ function link_format(idArray) {
                 console.error(err);
                 return;
             }
-
+            console.log(resp.rawRequest.responseText);
             // v this consoles what I want v 
-            renderText(idArray, resp.rawRequest.responseText);
+            // renderText(idArray, resp.rawRequest.responseText);
 
             return resp;
         }
@@ -275,8 +275,8 @@ async function linkData(idArray) {
                 console.error(err);
                 return;
             }
-            d3.select('#thinking').classed('hidden', true);
-            renderText(idArray, resp.rawRequest.responseText);
+            // d3.select('#thinking').classed('hidden', true);
+            console.log(idArray, resp.rawRequest.responseText);
             return resp;
         }
     );

@@ -15,6 +15,14 @@ body {
     height: 400px;
 }
 
+.circle-group text {
+    font-size: 12px;
+}
+
+.circle-group circle {
+    fill: coral;
+}
+
 .search-container {
     width: 490px;
     display: block;

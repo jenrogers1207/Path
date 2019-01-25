@@ -17,29 +17,28 @@ export function drawGraph(data) {
         .force('center', d3.forceCenter(200, 200))
         .force("link", d3.forceLink().distance(50).strength(1));
 
-    let node = canvas.select('.nodes');
-    node.exit().remove();
+    let node = canvas.select('.nodes').selectAll('g').data(data);
 
-    let nodeEnter = node.selectAll('g')
-        .data(data)
-        .enter().append("g");
+
+
+    let nodeEnter = node
+        .enter().append("g").classed('circle-group', true);
 
     let circles = nodeEnter.append('circle')
         .attr("r", radius - .75)
-        .style('fill', 'red')
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended));
 
-    let labels = nodeEnter.append('text').text(d => d[0].properties.name);
+    let labels = nodeEnter.append('text').text(d => d[0].properties.name).attr("transform", "translate(-18,2)");
 
     node = nodeEnter.merge(node);
+    node.exit().remove();
 
     node.on('click', (d) => {
         console.log(d[0].properties);
     });
-    // node = nodeEnter.merge(node);
 
     simulation
         .nodes(data)
@@ -63,13 +62,9 @@ export function drawGraph(data) {
     }
 
     function ticked() {
-        /*
-                node.attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
-                    .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });*/
 
         node
             .attr("transform", function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
-
 
     }
 
