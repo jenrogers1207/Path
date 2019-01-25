@@ -1,5 +1,5 @@
 var neo4j = require('neo4j-driver').v1;
-var driver = neo4j.driver("bolt://localhost:11004", neo4j.auth.basic("neo4j", "test"));
+var driver = neo4j.driver("bolt://localhost:11010", neo4j.auth.basic("neo4j", "1234"));
 
 export function findInGraph(query) {
 
@@ -24,14 +24,13 @@ export function findInGraph(query) {
 }
 
 export function addToGraph(addition) {
-
+    console.log(addition);
+    let command = 'CREATE (n:Node {id:{" ' + addition + ' "}, data:{data}})';
     var session = driver.session();
     session
         .run(addition)
         .then(function(result) {
-            result.records.forEach(function(record) {
-                console.log(record);
-            });
+
             session.close();
         })
         .catch(function(error) {
