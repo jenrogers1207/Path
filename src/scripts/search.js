@@ -1,34 +1,18 @@
 import * as d3 from 'D3';
+const qo = require('./queryObject.js');
+const neoAPI = require('./neo4jLoader.js');
 
 const xhr = require('nets');
-//const dm = new DM.DataManager();
-//const queryAPI = DM.default;
-
-class QueryObject {
-    constructor(queryVal) {
-        this.queryVal = queryVal;
-        this.symbol = '';
-        this.name = '';
-        this.ncbi = '';
-        this.keggId = '';
-    }
-}
 
 export async function searchById(value) {
     const proxy = 'https://cors-anywhere.herokuapp.com/';
-
 
     d3.select('#linked-pathways').selectAll('*').remove();
     d3.select('#pathway-render').selectAll('*').remove();
     d3.select('#assoc-genes').selectAll('*').remove();
     d3.select('#gene-id').selectAll('*').remove();
 
-    // d3.select('#thinking').classed('hidden', false);
-
-    let query = new QueryObject(value);
-
-    console.log(query);
-
+    let query = new qo.QueryObject(value);
 
     if (value.includes(':')) {
         if (value.includes('ncbi-geneid')) {
@@ -45,7 +29,6 @@ export async function searchById(value) {
                 encoding: undefined,
                 headers: {
                     "Content-Type": "application/json"
-
                 }
             },
             function done(err, resp, body) {
@@ -54,25 +37,22 @@ export async function searchById(value) {
                     console.error(err);
                     return;
                 }
-                d3.select('#thinking').classed('hidden', true);
+
                 let geneID = d3.select('#gene-id');
-
                 let json = JSON.parse(resp.rawRequest.responseText);
-                let matchArray = new Array(json.hits[0]);
+
+                let props = json.hits[0];
+                let properties = { 'symbol': props.symbol, 'ncbi': props._id, 'entrezgene': props.entrezgene, 'description': props.name };
+
+                neoAPI.checkForNode(value).then(found => {
+                    if (found.length > 0) {
+                        for (let prop in properties) {
+                            neoAPI.setNodeProperty(value, prop, properties[prop]);
+                        }
+                    };
 
 
-                if (json.hits.length > 1) {
-                    matchArray.push(json.hits[1]);
-                }
-                let header = geneID.append('h3').text(value);
-
-                let options = geneID.selectAll('.gene_link').data(matchArray);
-                let optionsEnter = options.enter().append('div').classed('gene_link', true);
-                options = optionsEnter.merge(options);
-                // let link = options.append('h5').text(d => d.symbol);
-                let description = options.append('text').text(d => ' ' + d.name);
-                convert_id('ncbi-geneid:' + json.hits[0]._id);
-                return resp;
+                });
             });
     }
 }

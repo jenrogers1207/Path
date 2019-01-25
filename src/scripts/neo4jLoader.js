@@ -1,37 +1,59 @@
 var neo4j = require('neo4j-driver').v1;
-var driver = neo4j.driver("bolt://localhost:11010", neo4j.auth.basic("neo4j", "1234"));
+var driver = neo4j.driver("bolt://localhost:11013", neo4j.auth.basic("neo4j", "1234"));
 
-export function findInGraph(query) {
+export function addToGraph(query) {
+    let command = 'CREATE (gene:Node {name:"' + query + '"})';
+    var session = driver.session();
+    session
+        .run(command)
+        .then(function(result) {
+            session.close();
+            checkForNode(query);
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+}
 
-    // Create a session to run Cypher statements in.
-    // Note: Always make sure to close sessions when you are done using them!
+export async function checkForNode(name) {
+    var session = driver.session();
+    let command = 'MATCH (n:Node { name: "' + name + '" }) RETURN n';
+    return session
+        .run(command)
+        .then(function(result) {
+            session.close();
+            return result.records;
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+}
+
+export function setNodeProperty(name, prop, propValue) {
+    let command = 'MATCH (n:Node { name: "' + name + '" }) SET n.' + prop + '= "' + propValue + '"';
     var session = driver.session();
 
-    // the Promise way, where the complete result is collected before we act on it:
     session
-    //.run('MERGE (james:Person {name : {nameParam} }) RETURN james.name AS name', {nameParam: 'James'})
-        .run(query)
+        .run(command)
         .then(function(result) {
-            result.records.forEach(function(record) {
-                console.log(record);
-            });
             session.close();
         })
         .catch(function(error) {
             console.log(error);
         });
-
 }
 
-export function addToGraph(addition) {
-    console.log(addition);
-    let command = 'CREATE (n:Node {id:{" ' + addition + ' "}, data:{data}})';
+export async function getGraph() {
+    console.log('getting graph');
+    let command = 'MATCH (n:Node) RETURN n ';
     var session = driver.session();
-    session
-        .run(addition)
-        .then(function(result) {
 
+    return session
+        .run(command)
+        .then(function(result) {
+            let nodes = result.records.map(r => r._fields);
             session.close();
+            return nodes;
         })
         .catch(function(error) {
             console.log(error);

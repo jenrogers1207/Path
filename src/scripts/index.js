@@ -1,13 +1,23 @@
 import '../styles/index.scss';
 import * as d3 from 'D3';
-
+const gCanvas = require('./graphRender.js');
 var neoAPI = require('./neo4jLoader.js');
 var search = require('./search.js');
 
 d3.select('.search-icon').on('click', () => {
     const value = (document.getElementById('search-bar')).value;
-    search.searchById(value).then(d => console.log(d));
-    neoAPI.addToGraph('CREATE (' + value + ':Node {name:"gene"})');
+    neoAPI.checkForNode(value).then(found => {
+        if (found.length > 0) {
+            console.log("already exists");
+        } else {
+            neoAPI.addToGraph(value);
+        }
+        search.searchById(value).then(() => neoAPI.getGraph().then(g => gCanvas.drawGraph(g)));
+
+    });
 });
 
-//neoAPI.findInGraph('MATCH (n:Answer) RETURN n');
+let canvas = d3.select('#graph-render').append('svg').classed('graph-canvas', true);
+let nodeGroup = canvas.append('g').classed('nodes', true);
+
+neoAPI.getGraph().then(g => gCanvas.drawGraph(g));
