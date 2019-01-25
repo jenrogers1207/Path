@@ -1,8 +1,8 @@
 var neo4j = require('neo4j-driver').v1;
-var driver = neo4j.driver("bolt://localhost:11013", neo4j.auth.basic("neo4j", "1234"));
+var driver = neo4j.driver("bolt://localhost:11016", neo4j.auth.basic("neo4j", "1234"));
 
 export function addToGraph(query) {
-    let command = 'CREATE (gene:Node {name:"' + query + '"})';
+    let command = 'CREATE (n:Gene {name:"' + query + '"})';
     var session = driver.session();
     session
         .run(command)
@@ -17,7 +17,7 @@ export function addToGraph(query) {
 
 export async function checkForNode(name) {
     var session = driver.session();
-    let command = 'MATCH (n:Node { name: "' + name + '" }) RETURN n';
+    let command = 'MATCH (n:Gene { name: "' + name + '" }) RETURN n';
     return session
         .run(command)
         .then(function(result) {
@@ -30,7 +30,7 @@ export async function checkForNode(name) {
 }
 
 export function setNodeProperty(name, prop, propValue) {
-    let command = 'MATCH (n:Node { name: "' + name + '" }) SET n.' + prop + '= "' + propValue + '"';
+    let command = 'MATCH (n:Gene { name: "' + name + '" }) SET n.' + prop + '= "' + propValue + '"';
     var session = driver.session();
 
     session
@@ -45,7 +45,7 @@ export function setNodeProperty(name, prop, propValue) {
 
 export async function getGraph() {
     console.log('getting graph');
-    let command = 'MATCH (n:Node) RETURN n ';
+    let command = 'MATCH (n:Gene) RETURN n ';
     var session = driver.session();
 
     return session
