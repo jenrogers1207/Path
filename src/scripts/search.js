@@ -75,7 +75,7 @@ export function searchById() {
 }
 
 //Formater for CONVERT. Passed as param to query
-function convert_id(id) {
+async function convert_id(id) {
     //NEED TO MAKE THIS SO IT CAN USE OTHER IDS
     let stringArray = new Array();
     let type = 'genes/';
@@ -177,7 +177,7 @@ function conv_format(id) {
     return data;
 }
 
-function grabId(list) {
+async function grabId(list) {
     let stringArray = new Array();
 
     list = list.split(/(\s+)/);
@@ -254,6 +254,40 @@ function link_format(idArray) {
     );
     // v this throws cannot reads responseText of undefined what v 
     console.log(data);
+
+    return data;
+
+}
+
+//Formater for LINK. Passed as param to query
+async function linkData(idArray) {
+
+    let keggId = null;
+
+    keggId = (idArray.length > 1) ? idArray[1] : idArray[0];
+
+    let url = 'http://rest.kegg.jp/link/pathway/' + keggId;
+    const proxy = 'https://cors-anywhere.herokuapp.com/';
+
+    let data = xhr({
+            url: proxy + url,
+            method: 'GET',
+            encoding: undefined,
+            headers: {
+                "Content-Type": "text/plain"
+            }
+        },
+        await
+        function(err, resp, body) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            d3.select('#thinking').classed('hidden', true);
+            renderText(idArray, resp.rawRequest.responseText);
+            return resp;
+        }
+    );
 
     return data;
 
