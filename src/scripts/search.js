@@ -83,9 +83,6 @@ async function convert_id(id) {
             // v this consoles what I want v 
             grabId(resp.rawRequest.responseText).then(ids => {
                 console.log(ids);
-                let geneID = d3.select('#gene-id');
-                let div = geneID.append('div').classed('ids', true);
-                div.append('text').text(ids[0]);
 
                 linkData(ids);
             });
@@ -275,8 +272,15 @@ async function linkData(idArray) {
                 console.error(err);
                 return;
             }
-            // d3.select('#thinking').classed('hidden', true);
-            console.log(idArray, resp.rawRequest.responseText);
+
+            let splits = grabId(resp.rawRequest.responseText).then(d => {
+                console.log('is this happening?');
+                console.log(d);
+                let id_link = d[0];
+                let splits = d.filter(d => d != id_link);
+                console.log(splits);
+            });
+
             return resp;
         }
     );

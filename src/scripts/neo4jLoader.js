@@ -59,3 +59,7 @@ export async function getGraph() {
             console.log(error);
         });
 }
+
+export async function addPaths() {
+    console.log('this is the paths');
+}
