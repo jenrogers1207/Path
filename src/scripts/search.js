@@ -16,9 +16,9 @@ export async function searchById(value) {
 
     if (value.includes(':')) {
         if (value.includes('ncbi-geneid')) {
-            convert_id(value);
+            convert_id(query);
         } else {
-            linkData([value]);
+            linkData(query, [value]);
         }
     } else {
         let url = 'http://mygene.info/v3/query?q=' + value;
@@ -43,7 +43,8 @@ export async function searchById(value) {
 
                 let props = json.hits[0];
                 let properties = { 'symbol': props.symbol, 'ncbi': props._id, 'entrezgene': props.entrezgene, 'description': props.name };
-
+                query.ncbi = props.id;
+                query.symbol = props.symbol;
                 neoAPI.checkForNode(value).then(found => {
                     if (found.length > 0) {
                         for (let prop in properties) {
@@ -52,17 +53,17 @@ export async function searchById(value) {
                     };
                 });
 
-                convert_id('ncbi-geneid:' + properties.ncbi);
+                convert_id(query);
             });
     }
 }
 
 //Formater for CONVERT. Passed as param to query
-async function convert_id(id) {
+async function convert_id(queryOb) {
     //NEED TO MAKE THIS SO IT CAN USE OTHER IDS
     let stringArray = new Array();
     let type = 'genes/';
-    let url = 'http://rest.kegg.jp/conv/' + type + id;
+    let url = 'http://rest.kegg.jp/conv/' + type + 'ncbi-geneid:' + queryOb.ncbi;
 
     const proxy = 'https://cors-anywhere.herokuapp.com/';
 
@@ -81,10 +82,10 @@ async function convert_id(id) {
             }
 
             // v this consoles what I want v 
-            grabId(resp.rawRequest.responseText).then(ids => {
+            grabId(queryOb, resp.rawRequest.responseText).then(ids => {
                 console.log(ids);
-
-                linkData(ids);
+                console.log(queryOb);
+                linkData(queryOb, ids);
             });
 
             // let json = JSON.parse(resp.rawRequest.responseText);
@@ -154,7 +155,7 @@ function conv_format(id) {
             }
 
             // v this consoles what I want v 
-            grabId(resp.rawRequest.responseText).then(ids => link_format(ids));
+            grabId(null, resp.rawRequest.responseText).then(ids => link_format(ids));
 
             return resp;
         }
@@ -166,7 +167,7 @@ function conv_format(id) {
     return data;
 }
 
-async function grabId(list) {
+async function grabId(query, list) {
     let stringArray = new Array();
 
     list = list.split(/(\s+)/);
@@ -182,7 +183,7 @@ async function grabId(list) {
 
 function renderText(idArray, response) {
 
-    let splits = grabId(response);
+    let splits = grabId(null, response);
     let id_link = splits[0];
     splits = splits.filter(d => d != id_link);
 
@@ -249,11 +250,9 @@ function link_format(idArray) {
 }
 
 //Formater for LINK. Passed as param to query
-async function linkData(idArray) {
+async function linkData(queryOb, idArray) {
 
-    let keggId = null;
-
-    keggId = (idArray.length > 1) ? idArray[1] : idArray[0];
+    let keggId = (idArray.length > 1) ? idArray[1] : idArray[0];
 
     let url = 'http://rest.kegg.jp/link/pathway/' + keggId;
     const proxy = 'https://cors-anywhere.herokuapp.com/';
@@ -273,12 +272,17 @@ async function linkData(idArray) {
                 return;
             }
 
-            let splits = grabId(resp.rawRequest.responseText).then(d => {
-                console.log('is this happening?');
-                console.log(d);
+            let splits = grabId(queryOb, resp.rawRequest.responseText).then(d => {
+
                 let id_link = d[0];
                 let splits = d.filter(d => d != id_link);
+
                 console.log(splits);
+
+                splits.map(path => {
+                    console.log(path);
+                    neoAPI.addToGraph(path, 'Pathway').then(() => neoAPI.getGraph().then(g => gCanvas.drawGraph(g)));
+                });
             });
 
             return resp;

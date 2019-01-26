@@ -1,8 +1,8 @@
 export class QueryObject {
     constructor(queryVal) {
-        this.queryVal = queryVal;
+
         this.symbol = '';
-        this.name = '';
+        this.name = queryVal;
         this.ncbi = '';
         this.keggId = '';
     }

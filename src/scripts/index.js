@@ -10,7 +10,7 @@ d3.select('.search-icon').on('click', () => {
         if (found.length > 0) {
             console.log("already exists");
         } else {
-            neoAPI.addToGraph(value);
+            neoAPI.addToGraph(value, 'Gene');
         }
         search.searchById(value).then(() => neoAPI.getGraph().then(g => gCanvas.drawGraph(g)));
 
