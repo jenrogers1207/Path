@@ -61,7 +61,20 @@ export async function getGraph() {
         });
 }
 
-export async function addRelation() {
+export async function addRelation(name, pathName) {
     console.log('this is the paths');
-    let command = 'MATCH (a:Gene),(b:Pathway) WHERE a.name = "' + gene + '" AND b.name = "' + path + '" CREATE (a)-[p:path]->(b) RETURN p';
+    console.log(name, pathName);
+    let command = 'MATCH (a:Gene),(b:Pathway) WHERE a.name = "' + name + '" AND b.name = "' + pathName + '" CREATE (a)-[p:path]->(b) RETURN p';
+    var session = driver.session();
+    return session
+        .run(command)
+        .then(function(result) {
+            //  let nodes = result.records.map(r => r._fields);
+            console.log(result);
+            session.close();
+            return nodes;
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
 }
