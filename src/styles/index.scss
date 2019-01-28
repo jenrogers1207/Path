@@ -11,16 +11,23 @@ body {
 }
 
 .graph-canvas {
-    width: 400px;
-    height: 400px;
+    width: 100%;
+    height: 600px;
+    margin: auto;
 }
 
-.circle-group text {
-    font-size: 12px;
+.node text {
+    font-size: 8px;
 }
 
-.circle-group circle {
+.node.gene circle {
     fill: coral;
+    r: 20px;
+}
+
+.node.pathway circle {
+    fill: goldenrod;
+    r: 10px;
 }
 
 .search-container {
