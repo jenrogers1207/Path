@@ -80,3 +80,17 @@ input#search-bar {
     top: -62px;
     right: -45px;
 }
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 100px;
+    height: 20px;
+    padding: 3px;
+    font: 12px sans-serif;
+    color: #fff;
+    background: rgb(43, 47, 51);
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}

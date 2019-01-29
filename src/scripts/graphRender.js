@@ -9,6 +9,11 @@ export function drawGraph(data) {
         height = +canvas.attr("height"),
         radius = 20;
 
+    // Define the div for the tooltip
+    var toolDiv = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
     let simulation = d3.forceSimulation()
         .velocityDecay(0.1)
         .force("link", d3.forceLink().distance(80).strength(.5))
@@ -46,9 +51,11 @@ export function drawGraph(data) {
             .on("drag", dragged)
             .on("end", dragended));
 
-    let labels = nodeEnter.append('text').text(d => d.title).attr('x', 10)
-        .attr('y', 3);
-    // .attr("transform", "translate(-18,2)");
+    let geneNode = nodeEnter.filter(d => d.label == 'gene');
+
+    let labels = geneNode.append('text').text(d => d.title).style('color', '#ffffff').attr('x', 0)
+        .attr('y', 3).attr('text-anchor', 'middle');
+
 
     node.append("title")
         .text(function(d) { return d.title; });
@@ -58,6 +65,20 @@ export function drawGraph(data) {
     node.on('click', (d) => {
         console.log(d);
     });
+
+    node.on("mouseover", function(d) {
+            toolDiv.transition()
+                .duration(200)
+                .style("opacity", .8);
+            toolDiv.html(d.title + "<br/>")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(d) {
+            toolDiv.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
 
     simulation
         .nodes(data.nodes)
