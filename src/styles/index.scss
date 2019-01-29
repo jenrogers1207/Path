@@ -30,6 +30,11 @@ body {
     r: 20px;
 }
 
+.node.gene.selected circle {
+    fill: red;
+    r: 25px;
+}
+
 .node.pathway circle {
     fill: goldenrod;
     r: 10px;

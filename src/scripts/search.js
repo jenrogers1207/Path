@@ -1,8 +1,8 @@
 import * as d3 from 'D3';
+import { SelectedTest } from './queryObject.js';
 const qo = require('./queryObject.js');
 const neoAPI = require('./neo4jLoader.js');
 const gCanvas = require('./graphRender.js');
-
 const xhr = require('nets');
 
 export async function searchById(value) {
@@ -13,7 +13,10 @@ export async function searchById(value) {
     d3.select('#assoc-genes').selectAll('*').remove();
     d3.select('#gene-id').selectAll('*').remove();
 
-    let query = new qo.QueryObject(value);
+    let query = SelectedTest;
+    console.log(SelectedTest);
+
+    let selectQuery = selected(query);
 
     if (value.includes(':')) {
         if (value.includes('ncbi-geneid')) {
@@ -46,6 +49,7 @@ export async function searchById(value) {
                 let properties = { 'symbol': props.symbol, 'ncbi': props._id, 'entrezgene': props.entrezgene, 'description': props.name };
                 query.ncbi = props._id;
                 query.symbol = props.symbol;
+                console.log(selectQuery);
                 neoAPI.checkForNode(value).then(found => {
                     if (found.length > 0) {
                         for (let prop in properties) {
@@ -84,21 +88,15 @@ async function convert_id(queryOb) {
 
             // v this consoles what I want v 
             grabId(queryOb, resp.rawRequest.responseText).then(ids => {
-                console.log(ids);
-                console.log(queryOb);
+
                 linkData(queryOb, ids);
             });
 
-            // let json = JSON.parse(resp.rawRequest.responseText);
-            // console.log(json);
             return resp;
         }
 
     );
-    // v this throws cannot reads responseText of undefined what v 
-    //console.log(data);
 
-    //  return data;
 }
 
 
@@ -122,12 +120,6 @@ function get_format(id, geneId) {
                 return;
             }
 
-            /*
-            pathways.pathProcess(resp.rawRequest.responseXML, geneId).then(p => {
-                console.log(p);
-                pathways.pathRender(p)
-            });
-            */
         });
 }
 
@@ -162,8 +154,6 @@ function conv_format(id) {
         }
 
     );
-    // v this throws cannot reads responseText of undefined what v 
-    console.log(data);
 
     return data;
 }
@@ -235,16 +225,13 @@ function link_format(idArray) {
                 console.error(err);
                 return;
             }
-            console.log(resp.rawRequest.responseText);
-            // v this consoles what I want v 
-            // renderText(idArray, resp.rawRequest.responseText);
+
 
             return resp;
         }
 
     );
-    // v this throws cannot reads responseText of undefined what v 
-    console.log(data);
+
 
     return data;
 
@@ -252,8 +239,6 @@ function link_format(idArray) {
 
 //Formater for LINK. Passed as param to query
 async function linkData(queryOb, idArray) {
-
-    console.log(queryOb);
 
     let keggId = (idArray.length > 1) ? idArray[1] : idArray[0];
 
@@ -280,10 +265,8 @@ async function linkData(queryOb, idArray) {
                 let id_link = d[0];
                 let splits = d.filter(d => d != id_link);
 
-                console.log(queryOb.name);
-
                 splits.map(path => {
-                    console.log(path);
+
                     neoAPI.addToGraph(path, 'Pathway').then(neoAPI.addRelation(queryOb.name, path).then(() => neoAPI.getGraph().then(g => gCanvas.drawGraph(g))));
                 });
             });

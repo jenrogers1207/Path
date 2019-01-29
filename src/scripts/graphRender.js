@@ -1,9 +1,10 @@
 import '../styles/index.scss';
 import * as d3 from 'D3';
+import * as search from './search.js';
+import { SelectedTest } from './queryObject.js';
 
 export function drawGraph(data) {
-    // console.log(data.nodes);
-
+    console.log(SelectedTest);
     let canvas = d3.select('#graph-render').select('.graph-canvas'),
         width = +canvas.attr("width"),
         height = +canvas.attr("height"),
@@ -64,6 +65,9 @@ export function drawGraph(data) {
 
     node.on('click', (d) => {
         console.log(d);
+        SelectedTest.queryOb = d.data;
+        console.log(SelectedTest);
+        drawGraph(data);
     });
 
     node.on("mouseover", function(d) {
@@ -79,6 +83,16 @@ export function drawGraph(data) {
                 .duration(500)
                 .style("opacity", 0);
         });
+
+    let selectedNode = node.filter(d => {
+        console.log(SelectedTest.queryOb);
+        node.classed('selected', false);
+        return SelectedTest.queryOb != null ? d.title == SelectedTest.queryOb.name : null;
+    });
+
+    console.log(selectedNode);
+
+    selectedNode != null ? selectedNode.classed('selected', true) : console.log('no node');
 
     simulation
         .nodes(data.nodes)

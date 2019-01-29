@@ -7,3 +7,12 @@ export class QueryObject {
         this.keggId = '';
     }
 }
+
+export class SelectedQuery {
+    constructor(queryOb) {
+
+        this.queryOb = queryOb;
+    }
+}
+
+export const SelectedTest = new SelectedQuery(null);
