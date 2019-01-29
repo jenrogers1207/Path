@@ -46,9 +46,9 @@ export function setNodeProperty(name, prop, propValue) {
 }
 
 export async function getGraph() {
-    console.log('getting graph');
+
     let command = 'MATCH (g:Gene)-[p:path]->(a:Pathway) \
-    RETURN g.name AS gene, collect(a.name) AS pathway';
+    RETURN g AS gene, collect(a.name) AS pathway';
     //(a)-[p:path]->(b)
 
     var session = driver.session();
@@ -56,16 +56,13 @@ export async function getGraph() {
     return session
         .run(command)
         .then(function(result) {
-            // console.log(result);
             session.close();
-
-            //  let nodes = result.records.map(r => r._fields);
-            // console.log(nodes);
             var nodes = [],
                 rels = [],
                 i = 0;
             result.records.forEach(res => {
-                nodes.push({ title: res.get('gene'), label: 'gene' });
+
+                nodes.push({ title: res.get('gene').properties.name, label: 'gene', data: res.get('gene').properties });
                 var target = i;
                 i++;
 
@@ -80,7 +77,7 @@ export async function getGraph() {
                     rels.push({ source, target });
                 });
             });
-            console.log({ nodes, links: rels });
+
             return { nodes, links: rels };
             // });
             //    return nodes;
@@ -91,15 +88,12 @@ export async function getGraph() {
 }
 
 export async function addRelation(name, pathName) {
-    console.log('this is the paths');
-    console.log(name, pathName);
+
     let command = 'MATCH (a:Gene),(b:Pathway) WHERE a.name = "' + name + '" AND b.name = "' + pathName + '" CREATE (a)-[p:path]->(b) RETURN p';
     var session = driver.session();
     return session
         .run(command)
         .then(function(result) {
-            //  let nodes = result.records.map(r => r._fields);
-            console.log(result);
             session.close();
             return nodes;
         })

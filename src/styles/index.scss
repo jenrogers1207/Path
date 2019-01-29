@@ -20,6 +20,11 @@ body {
     font-size: 8px;
 }
 
+.node circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+
 .node.gene circle {
     fill: coral;
     r: 20px;
@@ -28,6 +33,10 @@ body {
 .node.pathway circle {
     fill: goldenrod;
     r: 10px;
+}
+
+.link {
+    stroke-opacity: 0.6;
 }
 
 .search-container {

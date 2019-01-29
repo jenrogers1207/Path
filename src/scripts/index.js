@@ -18,6 +18,7 @@ d3.select('.search-icon').on('click', () => {
 });
 
 let canvas = d3.select('#graph-render').append('svg').classed('graph-canvas', true);
+let linkGroup = canvas.append('g').classed('links', true);
 let nodeGroup = canvas.append('g').classed('nodes', true);
 
 neoAPI.getGraph().then(g => gCanvas.drawGraph(g));
