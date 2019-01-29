@@ -14,9 +14,6 @@ export async function searchById(value) {
     d3.select('#gene-id').selectAll('*').remove();
 
     let query = SelectedTest;
-    console.log(SelectedTest);
-
-    let selectQuery = selected(query);
 
     if (value.includes(':')) {
         if (value.includes('ncbi-geneid')) {
@@ -49,7 +46,7 @@ export async function searchById(value) {
                 let properties = { 'symbol': props.symbol, 'ncbi': props._id, 'entrezgene': props.entrezgene, 'description': props.name };
                 query.ncbi = props._id;
                 query.symbol = props.symbol;
-                console.log(selectQuery);
+
                 neoAPI.checkForNode(value).then(found => {
                     if (found.length > 0) {
                         for (let prop in properties) {

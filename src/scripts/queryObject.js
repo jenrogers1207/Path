@@ -1,3 +1,4 @@
+import * as d3 from 'D3';
 export class QueryObject {
     constructor(queryVal) {
 
@@ -16,3 +17,11 @@ export class SelectedQuery {
 }
 
 export const SelectedTest = new SelectedQuery(null);
+
+export async function drawSelectedPanel(query) {
+    let panel = d3.select('#query-panel');
+    panel.selectAll('*').remove();
+    panel.append('h2').text(query.name);
+    query.description != undefined ? panel.append('text').text(query.description) : panel.append('text').text('pathway');
+
+}

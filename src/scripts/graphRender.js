@@ -1,7 +1,7 @@
 import '../styles/index.scss';
 import * as d3 from 'D3';
 import * as search from './search.js';
-import { SelectedTest } from './queryObject.js';
+import { SelectedTest, drawSelectedPanel } from './queryObject.js';
 
 export function drawGraph(data) {
     console.log(SelectedTest);
@@ -11,9 +11,7 @@ export function drawGraph(data) {
         radius = 20;
 
     // Define the div for the tooltip
-    var toolDiv = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+    var toolDiv = d3.select('.tooltip');
 
     let simulation = d3.forceSimulation()
         .velocityDecay(0.1)
@@ -93,6 +91,8 @@ export function drawGraph(data) {
     console.log(selectedNode);
 
     selectedNode != null ? selectedNode.classed('selected', true) : console.log('no node');
+
+    SelectedTest.queryOb != null ? drawSelectedPanel(SelectedTest.queryOb) : console.log('no code');
 
     simulation
         .nodes(data.nodes)
